@@ -230,7 +230,6 @@
     <div class="container">
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('metrics')">Performance Metrics</button>
-            <button class="tab-btn" onclick="showTab('oxford-all')">Oxford All Experiments</button>
             <button class="tab-btn" onclick="showTab('parameters')">Parameter Effects</button>
             <button class="tab-btn" onclick="showTab('timing')">Computational Cost</button>
             <button class="tab-btn" onclick="showTab('figures')">Comparison Figures</button>
@@ -469,124 +468,15 @@
                     <td class="best">0.2368</td>
                 </tr>
             </table>
-        </div>
 
-        <!-- Tab 2: Oxford All Experiments -->
-        <div id="oxford-all" class="tab-content">
-            <h2>Oxford-IIIT Pet: All Experiments</h2>
+            <h3>Oxford-IIIT Pet: CasCAM Hyperparameter Analysis</h3>
+            <p>We conducted 23 experiments on the Oxford-IIIT Pet dataset with different hyperparameter configurations to identify optimal settings. The Top-K threshold method consistently outperforms other threshold methods across all metrics.</p>
 
-            <div class="summary-cards">
-                <div class="card">
-                    <h4>Best Pointing Game</h4>
-                    <div class="value">89.24%</div>
-                    <div class="improvement">iter=10, θ=0.3, k=10</div>
-                </div>
-                <div class="card">
-                    <h4>Best IoU</h4>
-                    <div class="value">0.3049</div>
-                    <div class="improvement">iter=10, θ=0.3, k=20</div>
-                </div>
-                <div class="card">
-                    <h4>Best AP</h4>
-                    <div class="value">0.6529</div>
-                    <div class="improvement">iter=10, θ=0.3, k=10</div>
-                </div>
-                <div class="card">
-                    <h4>Total Experiments</h4>
-                    <div class="value">23</div>
-                    <div class="improvement">3 threshold methods</div>
-                </div>
-            </div>
-
-            <h3>Baseline Methods (All Experiments Share Same Baselines)</h3>
-            <table>
-                <tr>
-                    <th>Method</th>
-                    <th>AP</th>
-                    <th>IoU</th>
-                    <th>Pointing Game</th>
-                    <th>Top-15%</th>
-                </tr>
-                <tr>
-                    <td>CAM</td>
-                    <td>0.5190</td>
-                    <td>0.1432</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>GradCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>HiResCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>GradCAM++</td>
-                    <td>0.5207</td>
-                    <td>0.1287</td>
-                    <td>42.02%</td>
-                    <td>0.5054</td>
-                </tr>
-                <tr>
-                    <td>ScoreCAM</td>
-                    <td>0.5243</td>
-                    <td>0.1524</td>
-                    <td>42.22%</td>
-                    <td>0.5169</td>
-                </tr>
-                <tr>
-                    <td>AblationCAM</td>
-                    <td>0.5213</td>
-                    <td>0.1314</td>
-                    <td>41.81%</td>
-                    <td>0.5050</td>
-                </tr>
-                <tr>
-                    <td>XGradCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>FullGrad</td>
-                    <td>0.4940</td>
-                    <td>0.2350</td>
-                    <td>59.61%</td>
-                    <td>0.5142</td>
-                </tr>
-                <tr>
-                    <td>EigenGradCAM</td>
-                    <td>0.5007</td>
-                    <td>0.0762</td>
-                    <td>41.81%</td>
-                    <td>0.4913</td>
-                </tr>
-                <tr>
-                    <td>LayerCAM</td>
-                    <td>0.5225</td>
-                    <td>0.1316</td>
-                    <td>42.22%</td>
-                    <td>0.5100</td>
-                </tr>
-            </table>
-
-            <h3>CasCAM with Top-K Threshold (Best Method)</h3>
-            <div class="config-note">
-                The top_k threshold method consistently outperforms other threshold methods across all metrics.
-            </div>
+            <h4>CasCAM with Top-K Threshold</h4>
             <table>
                 <tr>
                     <th>num_iter</th>
-                    <th>θ</th>
+                    <th>\(\theta\)</th>
                     <th>top_k</th>
                     <th>AP</th>
                     <th>IoU</th>
@@ -702,18 +592,14 @@
                     <td>0.6545</td>
                 </tr>
             </table>
-            <div class="key-finding">
-                <strong>Key Finding:</strong> top_k=10 achieves best Pointing Game (89.24%), while top_k=20 achieves best IoU (0.3049). Choose based on your optimization target.
-            </div>
+            <p>The configuration with \(\text{top\_k}=10\) achieves the best Pointing Game accuracy (89.24%), while \(\text{top\_k}=20\) achieves the best IoU (0.3049). The choice between these configurations depends on the specific optimization target.</p>
 
-            <h3>CasCAM with EBayesThresh</h3>
-            <div class="config-note">
-                Empirical Bayes thresholding provides adaptive, data-driven threshold selection.
-            </div>
+            <h4>CasCAM with EBayesThresh</h4>
+            <p>Empirical Bayes thresholding provides adaptive, data-driven threshold selection.</p>
             <table>
                 <tr>
                     <th>num_iter</th>
-                    <th>θ</th>
+                    <th>\(\theta\)</th>
                     <th>AP</th>
                     <th>IoU</th>
                     <th>Pointing Game</th>
@@ -760,18 +646,14 @@
                     <td class="best">0.6262</td>
                 </tr>
             </table>
-            <div class="key-finding">
-                <strong>Key Finding:</strong> EBayesThresh underperforms compared to Top-K, but still outperforms baseline methods on Pointing Game.
-            </div>
+            <p>EBayesThresh underperforms compared to Top-K threshold, but still achieves 69.01% Pointing Game accuracy, which outperforms most baseline methods.</p>
 
-            <h3>CasCAM with No Threshold (Baseline CasCAM)</h3>
-            <div class="config-note">
-                No explicit thresholding applied - uses raw CAM values.
-            </div>
+            <h4>CasCAM without Threshold</h4>
+            <p>For comparison, we also evaluate CasCAM without explicit thresholding, using raw CAM values.</p>
             <table>
                 <tr>
                     <th>num_iter</th>
-                    <th>θ</th>
+                    <th>\(\theta\)</th>
                     <th>AP</th>
                     <th>IoU</th>
                     <th>Pointing Game</th>
@@ -820,52 +702,50 @@
                 <tr class="highlight">
                     <td><strong>10</strong></td>
                     <td><strong>0.3</strong></td>
-                    <td class="best">0.4973</td>
-                    <td class="best">0.2179</td>
-                    <td class="best">40.66%</td>
-                    <td class="best">0.4966</td>
+                    <td>0.4973</td>
+                    <td>0.2179</td>
+                    <td>40.66%</td>
+                    <td>0.4966</td>
                 </tr>
             </table>
-            <div class="key-finding">
-                <strong>Key Finding:</strong> Without thresholding, CasCAM fails to outperform baseline methods. The threshold method is essential for CasCAM's effectiveness.
-            </div>
+            <p>Without thresholding, CasCAM fails to outperform baseline methods, demonstrating that the threshold method is essential for CasCAM's effectiveness.</p>
 
-            <h3>Summary: Best Configurations by Metric</h3>
+            <h4>Best Configurations Summary</h4>
             <table>
                 <tr>
                     <th>Optimization Target</th>
                     <th>Best Configuration</th>
                     <th>Value</th>
-                    <th>vs. Best Baseline</th>
+                    <th>Improvement vs. Best Baseline</th>
                 </tr>
                 <tr class="highlight">
                     <td><strong>Pointing Game</strong></td>
-                    <td>iter=10, θ=0.3, top_k=10</td>
+                    <td>iter=10, \(\theta\)=0.3, top_k=10</td>
                     <td class="best">89.24%</td>
                     <td>+29.63%p vs FullGrad (59.61%)</td>
                 </tr>
                 <tr class="highlight">
                     <td><strong>IoU</strong></td>
-                    <td>iter=10, θ=0.3, top_k=20</td>
+                    <td>iter=10, \(\theta\)=0.3, top_k=20</td>
                     <td class="best">0.3049</td>
                     <td>+29.7% vs FullGrad (0.2350)</td>
                 </tr>
                 <tr class="highlight">
                     <td><strong>AP</strong></td>
-                    <td>iter=10, θ=0.3, top_k=10</td>
+                    <td>iter=10, \(\theta\)=0.3, top_k=10</td>
                     <td class="best">0.6529</td>
                     <td>+24.5% vs ScoreCAM (0.5243)</td>
                 </tr>
                 <tr class="highlight">
                     <td><strong>Top-15% Energy</strong></td>
-                    <td>iter=10, θ=0.3, top_k=20</td>
+                    <td>iter=10, \(\theta\)=0.3, top_k=20</td>
                     <td class="best">0.6545</td>
                     <td>+26.6% vs ScoreCAM (0.5169)</td>
                 </tr>
             </table>
         </div>
 
-        <!-- Tab 3: Parameter Effects -->
+        <!-- Tab 2: Parameter Effects -->
         <div id="parameters" class="tab-content">
             <h2>Parameter Effects</h2>
 
