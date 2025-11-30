@@ -229,7 +229,7 @@
             <button class="tab-btn active" onclick="showTab('metrics')">Performance Metrics</button>
             <button class="tab-btn" onclick="showTab('oxford-all')">Oxford All Experiments</button>
             <button class="tab-btn" onclick="showTab('parameters')">Parameter Effects</button>
-            <button class="tab-btn" onclick="showTab('timing')">Timing Analysis</button>
+            <button class="tab-btn" onclick="showTab('timing')">Computational Cost</button>
             <button class="tab-btn" onclick="showTab('figures')">Comparison Figures</button>
         </div>
 
@@ -1005,104 +1005,314 @@
             </div>
         </div>
 
-        <!-- Tab 3: Timing Analysis -->
+        <!-- Tab 4: Computational Cost Analysis -->
         <div id="timing" class="tab-content">
-            <h2>Timing Analysis</h2>
+            <h2>Computational Cost Analysis</h2>
 
-            <h3>Timing Breakdown (per experiment)</h3>
-            <table>
-                <tr>
-                    <th>Component</th>
-                    <th>Time</th>
-                </tr>
-                <tr>
-                    <td>Training (per iteration)</td>
-                    <td>~2-5 min</td>
-                </tr>
-                <tr>
-                    <td>CAM Generation (per image)</td>
-                    <td>~0.1-0.5 sec</td>
-                </tr>
-                <tr>
-                    <td>Total (10 iterations, 500 images)</td>
-                    <td>~30-60 min</td>
-                </tr>
-            </table>
+            <p>We analyze the computational cost of various Class Activation Mapping (CAM) methods, including the proposed CasCAM approach. The analysis considers both inference time per image and training time, providing a comprehensive comparison for practical deployment scenarios.</p>
+
             <div class="config-note">
-                Times vary based on hardware (GPU) and dataset size.
+                <strong>Hardware Environment:</strong> NVIDIA A100-SXM4-80GB GPU, AMD EPYC 7742 64-Core Processor (128 threads), 503 GB RAM. Input images resized to 512×512 pixels.
             </div>
 
-            <h3>Method Comparison</h3>
+            <h3>Inference Time per Image</h3>
+            <p>Gradient-based methods (CAM, GradCAM, HiResCAM, XGradCAM, LayerCAM, GradCAM++) exhibit the fastest inference times, requiring only a single forward and backward pass. CasCAM, as an iterative method, requires approximately 0.253 seconds per image with 10 iterations. The inference time scales linearly: t<sub>CasCAM</sub> ≈ 0.015 + 0.024 × n<sub>iter</sub> (seconds).</p>
             <table>
                 <tr>
                     <th>Method</th>
-                    <th>Requires Training</th>
-                    <th>CAM Generation</th>
-                    <th>Relative Speed</th>
-                </tr>
-                <tr class="highlight">
-                    <td><strong>CasCAM</strong></td>
-                    <td>Yes (iterative)</td>
-                    <td>Fast</td>
-                    <td>Slower</td>
+                    <th>Time (s)</th>
+                    <th>Relative</th>
+                    <th>Category</th>
                 </tr>
                 <tr>
                     <td>CAM</td>
-                    <td>No</td>
-                    <td>Fast</td>
-                    <td>Fast</td>
+                    <td>0.024</td>
+                    <td>1.0×</td>
+                    <td>Gradient-based</td>
                 </tr>
                 <tr>
                     <td>GradCAM</td>
-                    <td>No</td>
-                    <td>Fast</td>
-                    <td>Fast</td>
+                    <td>0.025</td>
+                    <td>1.0×</td>
+                    <td>Gradient-based</td>
+                </tr>
+                <tr>
+                    <td>HiResCAM</td>
+                    <td>0.025</td>
+                    <td>1.0×</td>
+                    <td>Gradient-based</td>
+                </tr>
+                <tr>
+                    <td>XGradCAM</td>
+                    <td>0.025</td>
+                    <td>1.0×</td>
+                    <td>Gradient-based</td>
+                </tr>
+                <tr>
+                    <td>LayerCAM</td>
+                    <td>0.025</td>
+                    <td>1.0×</td>
+                    <td>Gradient-based</td>
+                </tr>
+                <tr>
+                    <td>GradCAM++</td>
+                    <td>0.027</td>
+                    <td>1.1×</td>
+                    <td>Gradient-based</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>CasCAM (iter=10)</strong></td>
+                    <td>0.253</td>
+                    <td>10.5×</td>
+                    <td>Iterative</td>
+                </tr>
+                <tr>
+                    <td>EigenGradCAM</td>
+                    <td>0.495</td>
+                    <td>20.5×</td>
+                    <td>Decomposition</td>
                 </tr>
                 <tr>
                     <td>ScoreCAM</td>
-                    <td>No</td>
-                    <td>Slow (perturbation)</td>
-                    <td>Slower</td>
+                    <td>0.927</td>
+                    <td>38.3×</td>
+                    <td>Perturbation</td>
+                </tr>
+                <tr>
+                    <td>AblationCAM</td>
+                    <td>1.044</td>
+                    <td>43.1×</td>
+                    <td>Perturbation</td>
                 </tr>
                 <tr>
                     <td>FullGrad</td>
-                    <td>No</td>
-                    <td>Medium</td>
-                    <td>Medium</td>
+                    <td>4.562</td>
+                    <td>188.5×</td>
+                    <td>Full gradient</td>
                 </tr>
             </table>
 
-            <h3>Trade-off Analysis</h3>
+            <h3>Training Time</h3>
+            <p>All CAM methods require at least one iteration of classifier training (iteration 1), taking approximately 20.7 minutes. CasCAM's cascade learning requires additional training iterations. Training time does not increase linearly because CasCAM progressively erases discriminative features, making classification increasingly difficult and triggering early stopping more frequently.</p>
             <table>
                 <tr>
-                    <th>Aspect</th>
-                    <th>CasCAM</th>
-                    <th>Traditional CAMs</th>
+                    <th>Method</th>
+                    <th>Training Time</th>
+                    <th>Additional Cost</th>
                 </tr>
                 <tr>
-                    <td>Setup Time</td>
-                    <td>Higher (training)</td>
-                    <td>None</td>
+                    <td>Other methods (iter=1)</td>
+                    <td>20.7 min</td>
+                    <td>--</td>
                 </tr>
                 <tr>
-                    <td>Inference Speed</td>
-                    <td>Same</td>
-                    <td>Same</td>
+                    <td>CasCAM (iter=3)</td>
+                    <td>57.1 min</td>
+                    <td>+36.4 min</td>
                 </tr>
                 <tr>
-                    <td>Localization Accuracy</td>
-                    <td class="best">+30%p</td>
-                    <td>Baseline</td>
+                    <td>CasCAM (iter=5)</td>
+                    <td>73.4 min</td>
+                    <td>+52.7 min</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>CasCAM (iter=10)</strong></td>
+                    <td>94.4 min</td>
+                    <td>+73.7 min</td>
+                </tr>
+            </table>
+
+            <h3>Early Stopping Statistics per Iteration</h3>
+            <p>The average number of training epochs decreases from 8.0 in iteration 1 to approximately 4-5 in later iterations. This reflects the diminishing discriminative information available in progressively erased images.</p>
+            <table>
+                <tr>
+                    <th>Iteration</th>
+                    <th>Avg Epochs</th>
+                    <th>Avg Time (s)</th>
+                    <th>Time/Epoch (s)</th>
+                    <th>Early Stop Rate</th>
                 </tr>
                 <tr>
-                    <td>AP Score</td>
-                    <td class="best">+25%</td>
-                    <td>Baseline</td>
+                    <td>1</td>
+                    <td>8.0</td>
+                    <td>1244</td>
+                    <td>145</td>
+                    <td>60%</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>7.1</td>
+                    <td>1057</td>
+                    <td>141</td>
+                    <td>67%</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>5.5</td>
+                    <td>953</td>
+                    <td>150</td>
+                    <td>87%</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>5.3</td>
+                    <td>912</td>
+                    <td>146</td>
+                    <td>86%</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>4.6</td>
+                    <td>769</td>
+                    <td>146</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>4.3</td>
+                    <td>826</td>
+                    <td>157</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>5.4</td>
+                    <td>1000</td>
+                    <td>162</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>4.5</td>
+                    <td>864</td>
+                    <td>160</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>5.0</td>
+                    <td>889</td>
+                    <td>159</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>5.4</td>
+                    <td>1123</td>
+                    <td>170</td>
+                    <td>92%</td>
+                </tr>
+            </table>
+
+            <h3>Total Cost Analysis</h3>
+            <p>The total computational cost consists of one-time training cost and per-image inference cost: T<sub>total</sub> = T<sub>train</sub> + N × t<sub>inference</sub>. CasCAM demonstrates higher upfront training cost but moderate inference time, making it suitable for large-scale image analysis.</p>
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>N=100</th>
+                    <th>N=500</th>
+                    <th>N=1000</th>
+                </tr>
+                <tr>
+                    <td>CAM/GradCAM</td>
+                    <td>20.8 min</td>
+                    <td>20.9 min</td>
+                    <td>21.1 min</td>
+                </tr>
+                <tr>
+                    <td>ScoreCAM</td>
+                    <td>22.3 min</td>
+                    <td>28.5 min</td>
+                    <td>36.2 min</td>
+                </tr>
+                <tr>
+                    <td>AblationCAM</td>
+                    <td>22.5 min</td>
+                    <td>29.4 min</td>
+                    <td>38.1 min</td>
+                </tr>
+                <tr>
+                    <td>FullGrad</td>
+                    <td>28.3 min</td>
+                    <td>58.8 min</td>
+                    <td>96.8 min</td>
+                </tr>
+                <tr>
+                    <td>CasCAM (iter=3)</td>
+                    <td>57.2 min</td>
+                    <td>57.8 min</td>
+                    <td>58.6 min</td>
+                </tr>
+                <tr>
+                    <td>CasCAM (iter=5)</td>
+                    <td>73.6 min</td>
+                    <td>74.5 min</td>
+                    <td>75.7 min</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>CasCAM (iter=10)</strong></td>
+                    <td>94.8 min</td>
+                    <td>96.5 min</td>
+                    <td>98.6 min</td>
+                </tr>
+            </table>
+
+            <h3>Break-even Analysis</h3>
+            <p>Given CasCAM's higher training cost but lower per-image inference cost compared to perturbation-based methods, we analyze when CasCAM becomes computationally more efficient.</p>
+            <table>
+                <tr>
+                    <th>Comparison</th>
+                    <th>Break-even Point</th>
+                </tr>
+                <tr>
+                    <td>CasCAM vs CAM/GradCAM</td>
+                    <td>Never (CasCAM always slower)</td>
+                </tr>
+                <tr>
+                    <td>CasCAM vs ScoreCAM</td>
+                    <td>N > 6,563 images</td>
+                </tr>
+                <tr>
+                    <td>CasCAM vs AblationCAM</td>
+                    <td>N > 5,589 images</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>CasCAM vs FullGrad</strong></td>
+                    <td><strong>N > 1,026 images</strong></td>
                 </tr>
             </table>
             <div class="key-finding">
-                <strong>Conclusion:</strong> CasCAM's upfront training cost is offset by significantly improved localization performance, making it ideal for applications where interpretability accuracy is critical.
+                <strong>Break-even calculation:</strong> N<sub>break-even</sub> = (T<sub>CasCAM</sub><sup>train</sup> - T<sub>other</sub><sup>train</sup>) / (t<sub>other</sub><sup>inf</sup> - t<sub>CasCAM</sub><sup>inf</sup>). For CasCAM vs FullGrad: (5664s - 1244s) / (4.562s - 0.253s) ≈ 1,026 images.
             </div>
+
+            <h3>Practical Recommendations</h3>
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Recommended Method</th>
+                    <th>Rationale</th>
+                </tr>
+                <tr>
+                    <td>Real-time applications</td>
+                    <td>CAM, GradCAM</td>
+                    <td>~0.025s per image inference</td>
+                </tr>
+                <tr>
+                    <td>Small-scale analysis (N < 1,000)</td>
+                    <td>FullGrad</td>
+                    <td>Good accuracy without additional training</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>Large-scale analysis (N > 1,000)</strong></td>
+                    <td><strong>CasCAM</strong></td>
+                    <td>Training cost amortized, better localization</td>
+                </tr>
+                <tr>
+                    <td>Accuracy-speed trade-off</td>
+                    <td>CasCAM (iter=3-5)</td>
+                    <td>Reduced costs while improving over single-pass</td>
+                </tr>
+            </table>
         </div>
 
         <!-- Tab 4: Comparison Figures -->
