@@ -3378,76 +3378,365 @@
         <!-- Tab 4: Comparison Figures -->
         <div id="figures" class="tab-content">
             <h2>Comparison Figures</h2>
+            <p>Visual comparison of CasCAM against baseline methods for best configurations.</p>
 
-            <h3>Iterative Refinement Process</h3>
-            <p>The following visualizations show how CasCAM progressively refines attention maps through cascading iterations.</p>
+            <!-- Dataset Selection -->
+            <div class="figure-controls">
+                <label for="dataset-select"><strong>Dataset:</strong></label>
+                <select id="dataset-select" onchange="updateFigureGallery()">
+                    <option value="coco">MS-COCO (num_iter=10, θ=0.5, k=5)</option>
+                    <option value="oxford">Oxford-IIIT Pet (num_iter=10, θ=0.3, k=10)</option>
+                </select>
 
-            <table>
-                <tr>
-                    <th>Iteration</th>
-                    <th>Effect</th>
-                </tr>
-                <tr>
-                    <td>1-3</td>
-                    <td>Remove obvious background artifacts</td>
-                </tr>
-                <tr>
-                    <td>4-6</td>
-                    <td>Refine object boundaries</td>
-                </tr>
-                <tr>
-                    <td>7-10</td>
-                    <td>Fine-tune focus on discriminative features</td>
-                </tr>
-            </table>
-
-            <h3>CAM Method Characteristics</h3>
-            <table>
-                <tr>
-                    <th>Method</th>
-                    <th>Oxford-IIIT Pet</th>
-                    <th>MS-COCO</th>
-                </tr>
-                <tr class="highlight">
-                    <td><strong>CasCAM</strong></td>
-                    <td>Precise localization, minimal background</td>
-                    <td>Focuses on primary object despite clutter</td>
-                </tr>
-                <tr>
-                    <td>CAM/GradCAM</td>
-                    <td>Broad activation, includes background</td>
-                    <td>Scattered across multiple regions</td>
-                </tr>
-                <tr>
-                    <td>FullGrad</td>
-                    <td>Good coverage but includes irrelevant</td>
-                    <td>Better than CAM but includes distractors</td>
-                </tr>
-            </table>
-
-            <h3>λ Effect on CAM Combination</h3>
-            <table>
-                <tr>
-                    <th>λ</th>
-                    <th>Visual Effect</th>
-                </tr>
-                <tr>
-                    <td>0.0</td>
-                    <td>Broader attention (uniform weighting)</td>
-                </tr>
-                <tr>
-                    <td>0.1</td>
-                    <td>Balanced focus</td>
-                </tr>
-                <tr>
-                    <td>0.5</td>
-                    <td>Sharper, focused attention (early iteration emphasis)</td>
-                </tr>
-            </table>
-
-            <div class="config-note">
-                Visual comparison figures will be added in future updates.
+                <label for="lambda-select" style="margin-left: 20px;"><strong>λ:</strong></label>
+                <select id="lambda-select" onchange="updateFigureGallery()">
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                </select>
             </div>
+
+            <!-- Image Navigation -->
+            <div class="figure-navigation">
+                <button onclick="prevImage()" class="nav-btn">← Previous</button>
+                <span id="image-counter">1 / 50</span>
+                <button onclick="nextImage()" class="nav-btn">Next →</button>
+            </div>
+
+            <!-- Main Image Display -->
+            <div class="figure-display">
+                <img id="comparison-image" src="" alt="Comparison Figure" style="max-width: 100%; height: auto;">
+            </div>
+
+            <!-- Thumbnail Grid -->
+            <div class="thumbnail-grid" id="thumbnail-container">
+                <!-- Thumbnails will be populated by JavaScript -->
+            </div>
+
+            <style>
+                .figure-controls {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #f5f5f5;
+                    border-radius: 8px;
+                }
+                .figure-controls select {
+                    padding: 8px 12px;
+                    font-size: 14px;
+                    border-radius: 4px;
+                    border: 1px solid #ccc;
+                    margin-left: 10px;
+                }
+                .figure-navigation {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+                .nav-btn {
+                    padding: 10px 20px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    background: #4a90a4;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                }
+                .nav-btn:hover {
+                    background: #3a7a94;
+                }
+                #image-counter {
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+                .figure-display {
+                    text-align: center;
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #fafafa;
+                    border-radius: 8px;
+                    border: 1px solid #ddd;
+                }
+                .thumbnail-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                    gap: 8px;
+                    margin-top: 20px;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    padding: 10px;
+                    background: #f9f9f9;
+                    border-radius: 8px;
+                }
+                .thumbnail {
+                    width: 80px;
+                    height: 60px;
+                    object-fit: cover;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                    border-radius: 4px;
+                    transition: border-color 0.2s;
+                }
+                .thumbnail:hover {
+                    border-color: #4a90a4;
+                }
+                .thumbnail.active {
+                    border-color: #2c5f6e;
+                }
+            </style>
+
+            <script>
+                const imageData = {
+                    coco: {
+                        "0.1": [
+                            "Coco_cat_00149_comparison-1.png",
+                            "Coco_cat_00151_comparison-1.png",
+                            "Coco_cat_00155_comparison-1.png",
+                            "Coco_cat_00168_comparison-1.png",
+                            "Coco_cat_00175_comparison-1.png",
+                            "Coco_cat_00177_comparison-1.png",
+                            "Coco_cat_00179_comparison-1.png",
+                            "Coco_cat_00187_comparison-1.png",
+                            "Coco_cat_00204_comparison-1.png",
+                            "Coco_cat_00207_comparison-1.png",
+                            "Coco_cat_00209_comparison-1.png",
+                            "Coco_cat_00214_comparison-1.png",
+                            "Coco_cat_00217_comparison-1.png",
+                            "Coco_cat_00219_comparison-1.png",
+                            "Coco_cat_00222_comparison-1.png",
+                            "Coco_cat_00230_comparison-1.png",
+                            "Coco_cat_00232_comparison-1.png",
+                            "Coco_cat_00250_comparison-1.png",
+                            "Coco_cat_00252_comparison-1.png",
+                            "Coco_cat_00280_comparison-1.png",
+                            "Coco_cat_00283_comparison-1.png",
+                            "Coco_cat_00287_comparison-1.png",
+                            "Coco_cat_00296_comparison-1.png",
+                            "Coco_cat_00297_comparison-1.png",
+                            "Coco_cat_00300_comparison-1.png",
+                            "Coco_cat_00305_comparison-1.png",
+                            "Coco_cat_00306_comparison-1.png",
+                            "Coco_cat_00311_comparison-1.png",
+                            "Coco_cat_00312_comparison-1.png",
+                            "Coco_cat_00337_comparison-1.png",
+                            "Coco_cat_00342_comparison-1.png",
+                            "Coco_cat_00351_comparison-1.png",
+                            "Coco_cat_00353_comparison-1.png",
+                            "Coco_cat_00354_comparison-1.png",
+                            "Coco_cat_00355_comparison-1.png",
+                            "Coco_cat_00488_comparison-1.png",
+                            "Coco_cat_00490_comparison-1.png",
+                            "Coco_cat_00491_comparison-1.png",
+                            "Coco_cat_00502_comparison-1.png",
+                            "Coco_cat_00503_comparison-1.png",
+                            "Coco_cat_00504_comparison-1.png",
+                            "Coco_cat_00510_comparison-1.png",
+                            "Coco_cat_00511_comparison-1.png",
+                            "Coco_cat_00514_comparison-1.png",
+                            "Coco_cat_00516_comparison-1.png",
+                            "Coco_cat_00517_comparison-1.png",
+                            "Coco_cat_00518_comparison-1.png",
+                            "Coco_cat_00519_comparison-1.png",
+                            "Coco_cat_00535_comparison-1.png",
+                            "Coco_cat_00539_comparison-1.png"
+                        ]
+                    },
+                    oxford: {
+                        "0.1": [
+                            "Abyssinian_108_comparison-1.png",
+                            "Abyssinian_110_comparison-1.png",
+                            "Abyssinian_112_comparison-1.png",
+                            "Abyssinian_113_comparison-1.png",
+                            "Abyssinian_114_comparison-1.png",
+                            "Abyssinian_118_comparison-1.png",
+                            "Abyssinian_119_comparison-1.png",
+                            "Abyssinian_123_comparison-1.png",
+                            "Abyssinian_126_comparison-1.png",
+                            "Abyssinian_127_comparison-1.png",
+                            "Abyssinian_133_comparison-1.png",
+                            "Abyssinian_135_comparison-1.png",
+                            "Abyssinian_136_comparison-1.png",
+                            "Abyssinian_13_comparison-1.png",
+                            "Abyssinian_144_comparison-1.png",
+                            "Abyssinian_146_comparison-1.png",
+                            "Abyssinian_148_comparison-1.png",
+                            "Abyssinian_149_comparison-1.png",
+                            "Abyssinian_159_comparison-1.png",
+                            "Abyssinian_15_comparison-1.png",
+                            "Abyssinian_184_comparison-1.png",
+                            "Abyssinian_191_comparison-1.png",
+                            "Abyssinian_196_comparison-1.png",
+                            "Abyssinian_197_comparison-1.png",
+                            "Abyssinian_206_comparison-1.png",
+                            "Abyssinian_216_comparison-1.png",
+                            "Abyssinian_217_comparison-1.png",
+                            "Abyssinian_226_comparison-1.png",
+                            "Abyssinian_228_comparison-1.png",
+                            "Abyssinian_22_comparison-1.png",
+                            "Abyssinian_31_comparison-1.png",
+                            "Abyssinian_32_comparison-1.png",
+                            "Abyssinian_37_comparison-1.png",
+                            "Abyssinian_51_comparison-1.png",
+                            "Abyssinian_5_comparison-1.png",
+                            "Abyssinian_62_comparison-1.png",
+                            "Abyssinian_68_comparison-1.png",
+                            "Abyssinian_6_comparison-1.png",
+                            "Abyssinian_71_comparison-1.png",
+                            "Abyssinian_7_comparison-1.png",
+                            "Abyssinian_82_comparison-1.png",
+                            "Abyssinian_83_comparison-1.png",
+                            "Abyssinian_88_comparison-1.png",
+                            "Abyssinian_91_comparison-1.png",
+                            "Abyssinian_94_comparison-1.png",
+                            "Bengal_102_comparison-1.png",
+                            "Bengal_104_comparison-1.png",
+                            "Bengal_118_comparison-1.png",
+                            "Bengal_121_comparison-1.png",
+                            "Bengal_126_comparison-1.png"
+                        ],
+                        "0.2": [
+                            "Abyssinian_108_comparison-1.png",
+                            "Abyssinian_110_comparison-1.png",
+                            "Abyssinian_112_comparison-1.png",
+                            "Abyssinian_113_comparison-1.png",
+                            "Abyssinian_114_comparison-1.png",
+                            "Abyssinian_118_comparison-1.png",
+                            "Abyssinian_119_comparison-1.png",
+                            "Abyssinian_123_comparison-1.png",
+                            "Abyssinian_126_comparison-1.png",
+                            "Abyssinian_127_comparison-1.png",
+                            "Abyssinian_133_comparison-1.png",
+                            "Abyssinian_135_comparison-1.png",
+                            "Abyssinian_136_comparison-1.png",
+                            "Abyssinian_13_comparison-1.png",
+                            "Abyssinian_144_comparison-1.png",
+                            "Abyssinian_146_comparison-1.png",
+                            "Abyssinian_148_comparison-1.png",
+                            "Abyssinian_149_comparison-1.png",
+                            "Abyssinian_159_comparison-1.png",
+                            "Abyssinian_15_comparison-1.png",
+                            "Abyssinian_184_comparison-1.png",
+                            "Abyssinian_191_comparison-1.png",
+                            "Abyssinian_196_comparison-1.png",
+                            "Abyssinian_197_comparison-1.png",
+                            "Abyssinian_206_comparison-1.png",
+                            "Abyssinian_216_comparison-1.png",
+                            "Abyssinian_217_comparison-1.png",
+                            "Abyssinian_226_comparison-1.png",
+                            "Abyssinian_228_comparison-1.png",
+                            "Abyssinian_22_comparison-1.png",
+                            "Abyssinian_31_comparison-1.png",
+                            "Abyssinian_32_comparison-1.png",
+                            "Abyssinian_37_comparison-1.png",
+                            "Abyssinian_51_comparison-1.png",
+                            "Abyssinian_5_comparison-1.png",
+                            "Abyssinian_62_comparison-1.png",
+                            "Abyssinian_68_comparison-1.png",
+                            "Abyssinian_6_comparison-1.png",
+                            "Abyssinian_71_comparison-1.png",
+                            "Abyssinian_7_comparison-1.png",
+                            "Abyssinian_82_comparison-1.png",
+                            "Abyssinian_83_comparison-1.png",
+                            "Abyssinian_88_comparison-1.png",
+                            "Abyssinian_91_comparison-1.png",
+                            "Abyssinian_94_comparison-1.png",
+                            "Bengal_102_comparison-1.png",
+                            "Bengal_104_comparison-1.png",
+                            "Bengal_118_comparison-1.png",
+                            "Bengal_121_comparison-1.png",
+                            "Bengal_126_comparison-1.png"
+                        ]
+                    }
+                };
+
+                let currentIndex = 0;
+                let currentImages = [];
+
+                function getImagePath(dataset, lambda, filename) {
+                    return `images/${dataset}/lambda_${lambda}/${filename}`;
+                }
+
+                function updateFigureGallery() {
+                    const dataset = document.getElementById('dataset-select').value;
+                    const lambda = document.getElementById('lambda-select').value;
+
+                    // Update lambda options based on dataset
+                    const lambdaSelect = document.getElementById('lambda-select');
+                    if (dataset === 'coco') {
+                        lambdaSelect.innerHTML = '<option value="0.1">0.1</option>';
+                    } else {
+                        lambdaSelect.innerHTML = '<option value="0.1">0.1</option><option value="0.2">0.2</option>';
+                    }
+
+                    const actualLambda = dataset === 'coco' ? '0.1' : lambda;
+                    currentImages = imageData[dataset][actualLambda] || [];
+                    currentIndex = 0;
+
+                    updateMainImage();
+                    updateThumbnails(dataset, actualLambda);
+                }
+
+                function updateMainImage() {
+                    if (currentImages.length === 0) return;
+
+                    const dataset = document.getElementById('dataset-select').value;
+                    const lambda = document.getElementById('lambda-select').value;
+                    const actualLambda = dataset === 'coco' ? '0.1' : lambda;
+
+                    const img = document.getElementById('comparison-image');
+                    img.src = getImagePath(dataset, actualLambda, currentImages[currentIndex]);
+
+                    document.getElementById('image-counter').textContent =
+                        `${currentIndex + 1} / ${currentImages.length}`;
+
+                    // Update thumbnail active state
+                    document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+                        thumb.classList.toggle('active', idx === currentIndex);
+                    });
+                }
+
+                function updateThumbnails(dataset, lambda) {
+                    const container = document.getElementById('thumbnail-container');
+                    container.innerHTML = '';
+
+                    currentImages.forEach((filename, idx) => {
+                        const img = document.createElement('img');
+                        img.src = getImagePath(dataset, lambda, filename);
+                        img.className = 'thumbnail' + (idx === 0 ? ' active' : '');
+                        img.onclick = () => {
+                            currentIndex = idx;
+                            updateMainImage();
+                        };
+                        container.appendChild(img);
+                    });
+                }
+
+                function prevImage() {
+                    if (currentImages.length === 0) return;
+                    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+                    updateMainImage();
+                }
+
+                function nextImage() {
+                    if (currentImages.length === 0) return;
+                    currentIndex = (currentIndex + 1) % currentImages.length;
+                    updateMainImage();
+                }
+
+                // Initialize on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateFigureGallery();
+                });
+
+                // Also initialize when tab is shown
+                const originalShowTab = window.showTab;
+                window.showTab = function(tabId) {
+                    originalShowTab ? originalShowTab(tabId) : null;
+                    if (tabId === 'figures') {
+                        setTimeout(updateFigureGallery, 100);
+                    }
+                };
+            </script>
         </div>
     </div>
 
