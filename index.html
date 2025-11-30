@@ -237,69 +237,104 @@
         <div id="metrics" class="tab-content active">
             <h2>Performance Metrics</h2>
 
-            <div class="summary-cards">
-                <div class="card">
-                    <h4>Pointing Game (Oxford)</h4>
-                    <div class="value">89.24%</div>
-                    <div class="improvement">+30%p vs FullGrad</div>
-                </div>
-                <div class="card">
-                    <h4>Pointing Game (COCO)</h4>
-                    <div class="value">75.98%</div>
-                    <div class="improvement">+31%p vs FullGrad</div>
-                </div>
-                <div class="card">
-                    <h4>Average Precision</h4>
-                    <div class="value">0.6529</div>
-                    <div class="improvement">+32% vs FullGrad</div>
-                </div>
-                <div class="card">
-                    <h4>IoU (Oxford)</h4>
-                    <div class="value">0.2366</div>
-                    <div class="improvement">Best among all</div>
-                </div>
-            </div>
+            <p>We evaluate CasCAM on the Oxford-IIIT Pet dataset, which contains 7,349 images across 37 pet categories with pixel-level segmentation annotations. This dataset provides an ideal benchmark for evaluating localization accuracy due to its clean single-object images with precise ground truth masks.</p>
 
-            <h3>Summary Comparison</h3>
+            <h3>Oxford-IIIT Pet Dataset Results</h3>
+            <div class="config-note">
+                Best Configuration: num_iter=10, θ=0.3, top_k=10, λ=0.1
+            </div>
             <table>
                 <tr>
-                    <th>Dataset</th>
                     <th>Method</th>
                     <th>AP</th>
-                    <th>Pointing Game</th>
                     <th>IoU</th>
+                    <th>Pointing Game</th>
+                    <th>Top-15%</th>
                 </tr>
                 <tr class="highlight">
-                    <td><strong>Oxford-IIIT Pet</strong></td>
-                    <td><strong>CasCAM</strong></td>
+                    <td><strong>CasCAM (Ours)</strong></td>
                     <td class="best">0.6529</td>
-                    <td class="best">89.24%</td>
                     <td class="best">0.2366</td>
+                    <td class="best">89.24%</td>
+                    <td class="best">0.6499</td>
                 </tr>
                 <tr>
-                    <td>Oxford-IIIT Pet</td>
+                    <td>CAM</td>
+                    <td>0.5190</td>
+                    <td>0.1432</td>
+                    <td>42.29%</td>
+                    <td>0.5001</td>
+                </tr>
+                <tr>
+                    <td>GradCAM</td>
+                    <td>0.5191</td>
+                    <td>0.1325</td>
+                    <td>42.29%</td>
+                    <td>0.5001</td>
+                </tr>
+                <tr>
+                    <td>HiResCAM</td>
+                    <td>0.5191</td>
+                    <td>0.1325</td>
+                    <td>42.29%</td>
+                    <td>0.5001</td>
+                </tr>
+                <tr>
+                    <td>GradCAM++</td>
+                    <td>0.5207</td>
+                    <td>0.1287</td>
+                    <td>42.02%</td>
+                    <td>0.5054</td>
+                </tr>
+                <tr>
+                    <td>ScoreCAM</td>
+                    <td>0.5243</td>
+                    <td>0.1524</td>
+                    <td>42.22%</td>
+                    <td>0.5169</td>
+                </tr>
+                <tr>
+                    <td>AblationCAM</td>
+                    <td>0.5213</td>
+                    <td>0.1314</td>
+                    <td>41.81%</td>
+                    <td>0.5050</td>
+                </tr>
+                <tr>
+                    <td>XGradCAM</td>
+                    <td>0.5191</td>
+                    <td>0.1325</td>
+                    <td>42.29%</td>
+                    <td>0.5001</td>
+                </tr>
+                <tr>
                     <td>FullGrad</td>
                     <td>0.4940</td>
-                    <td>59.61%</td>
                     <td>0.2350</td>
-                </tr>
-                <tr class="highlight">
-                    <td><strong>MS-COCO</strong></td>
-                    <td><strong>CasCAM</strong></td>
-                    <td class="best">0.5417</td>
-                    <td class="best">75.98%</td>
-                    <td>0.2050</td>
+                    <td>59.61%</td>
+                    <td>0.5142</td>
                 </tr>
                 <tr>
-                    <td>MS-COCO</td>
-                    <td>FullGrad</td>
-                    <td>0.4325</td>
-                    <td>44.91%</td>
-                    <td class="best">0.2416</td>
+                    <td>EigenGradCAM</td>
+                    <td>0.5007</td>
+                    <td>0.0762</td>
+                    <td>41.81%</td>
+                    <td>0.4913</td>
+                </tr>
+                <tr>
+                    <td>LayerCAM</td>
+                    <td>0.5225</td>
+                    <td>0.1316</td>
+                    <td>42.22%</td>
+                    <td>0.5100</td>
                 </tr>
             </table>
+            <div class="key-finding">
+                <strong>Key Finding:</strong> CasCAM achieves 89.24% Pointing Game accuracy, a +29.63%p improvement over FullGrad (59.61%). For IoU, CasCAM achieves 0.2366, comparable to FullGrad (0.2350) while significantly outperforming all other methods.
+            </div>
 
-            <h3>MS-COCO Dataset (1,728 images)</h3>
+            <h3>Generalization to MS-COCO Dataset</h3>
+            <p>To validate generalization, we also evaluate CasCAM on the more challenging MS-COCO dataset with 1,728 images containing multiple objects and complex backgrounds.</p>
             <div class="config-note">
                 Configuration: num_iter=15, θ=0.1, top_k=10, λ=0.0
             </div>
@@ -389,95 +424,46 @@
                     <td>0.2253</td>
                 </tr>
             </table>
-
-            <h3>Oxford-IIIT Pet Dataset</h3>
-            <div class="config-note">
-                Configuration: num_iter=10, θ=0.3, top_k=10, λ=0.1
+            <div class="key-finding">
+                <strong>Key Finding:</strong> CasCAM achieves 75.98% Pointing Game on MS-COCO, a +31.54%p improvement over FullGrad (44.44%). This demonstrates that CasCAM's iterative refinement effectively handles complex multi-object scenes.
             </div>
+
+            <h3>Summary Comparison</h3>
             <table>
                 <tr>
+                    <th>Dataset</th>
                     <th>Method</th>
                     <th>AP</th>
-                    <th>IoU</th>
                     <th>Pointing Game</th>
-                    <th>Top-15%</th>
+                    <th>IoU</th>
                 </tr>
                 <tr class="highlight">
-                    <td><strong>CasCAM (Ours)</strong></td>
+                    <td><strong>Oxford-IIIT Pet</strong></td>
+                    <td><strong>CasCAM</strong></td>
                     <td class="best">0.6529</td>
-                    <td class="best">0.2366</td>
                     <td class="best">89.24%</td>
-                    <td class="best">0.6499</td>
+                    <td class="best">0.2366</td>
                 </tr>
                 <tr>
-                    <td>CAM</td>
-                    <td>0.5190</td>
-                    <td>0.1432</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>GradCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>HiResCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
-                    <td>GradCAM++</td>
-                    <td>0.5207</td>
-                    <td>0.1287</td>
-                    <td>42.02%</td>
-                    <td>0.5054</td>
-                </tr>
-                <tr>
-                    <td>ScoreCAM</td>
-                    <td>0.5243</td>
-                    <td>0.1524</td>
-                    <td>42.22%</td>
-                    <td>0.5169</td>
-                </tr>
-                <tr>
-                    <td>AblationCAM</td>
-                    <td>0.5213</td>
-                    <td>0.1314</td>
-                    <td>41.81%</td>
-                    <td>0.5050</td>
-                </tr>
-                <tr>
-                    <td>XGradCAM</td>
-                    <td>0.5191</td>
-                    <td>0.1325</td>
-                    <td>42.29%</td>
-                    <td>0.5001</td>
-                </tr>
-                <tr>
+                    <td>Oxford-IIIT Pet</td>
                     <td>FullGrad</td>
                     <td>0.4940</td>
-                    <td>0.2350</td>
                     <td>59.61%</td>
-                    <td>0.5142</td>
+                    <td>0.2350</td>
+                </tr>
+                <tr class="highlight">
+                    <td><strong>MS-COCO</strong></td>
+                    <td><strong>CasCAM</strong></td>
+                    <td class="best">0.5417</td>
+                    <td class="best">75.98%</td>
+                    <td>0.2050</td>
                 </tr>
                 <tr>
-                    <td>EigenGradCAM</td>
-                    <td>0.5007</td>
-                    <td>0.0762</td>
-                    <td>41.81%</td>
-                    <td>0.4913</td>
-                </tr>
-                <tr>
-                    <td>LayerCAM</td>
-                    <td>0.5225</td>
-                    <td>0.1316</td>
-                    <td>42.22%</td>
-                    <td>0.5100</td>
+                    <td>MS-COCO</td>
+                    <td>FullGrad</td>
+                    <td>0.4223</td>
+                    <td>44.44%</td>
+                    <td class="best">0.2368</td>
                 </tr>
             </table>
         </div>
