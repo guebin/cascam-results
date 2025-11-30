@@ -1310,11 +1310,7 @@
             </table>
 
             <h3>4. Total Cost Comparison</h3>
-            <p>Using \(T_{\text{total}} = T_{\text{train}} + N \times t_{\text{inference}}\), we can compute the total time for different dataset sizes. This reveals an important pattern:</p>
-            <ul style="margin: 10px 0 10px 30px;">
-                <li><strong>Small \(N\):</strong> Training cost dominates → CasCAM appears expensive</li>
-                <li><strong>Large \(N\):</strong> Inference cost dominates → CasCAM's lower inference time becomes advantageous</li>
-            </ul>
+            <p>Using \(T_{\text{total}} = T_{\text{train}} + N \times t_{\text{inference}}\), we can compute the total time for different dataset sizes. For small \(N\), the training cost dominates the total cost, making CasCAM appear computationally expensive. However, as \(N\) increases, the inference cost becomes the dominant factor, and CasCAM's relatively low per-image inference time provides a significant advantage.</p>
 
             <table>
                 <tr>
