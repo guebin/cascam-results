@@ -229,12 +229,12 @@
 
     <div class="container">
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('metrics')">Performance Metrics</button>
-            <button class="tab-btn" onclick="showTab('figures')">Comparison Figures</button>
+            <button class="tab-btn active" onclick="showTab('figures')">Comparison Figures</button>
+            <button class="tab-btn" onclick="showTab('metrics')">Performance Metrics</button>
         </div>
 
         <!-- Tab 1: Performance Metrics -->
-        <div id="metrics" class="tab-content active">
+        <div id="metrics" class="tab-content">
             <h2>Performance Metrics</h2>
 
             <p>We evaluate CasCAM on the Oxford-IIIT Pet dataset, which contains 7,349 images across 37 pet categories with pixel-level segmentation annotations. This dataset provides an ideal benchmark for evaluating localization accuracy due to its clean single-object images with precise ground truth masks.</p>
@@ -2799,7 +2799,7 @@
             </table>
         </div>
         <!-- Tab 4: Comparison Figures -->
-        <div id="figures" class="tab-content">
+        <div id="figures" class="tab-content active">
             <h2>Comparison Figures</h2>
             <p>Visual comparison of CasCAM against baseline methods using best configurations.</p>
 

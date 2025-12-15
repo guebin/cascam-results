@@ -10,8 +10,8 @@ Supplementary materials for **CasCAM: Cascaded Class Activation Mapping**.
 
 | Tab | Description |
 |-----|-------------|
-| Performance Metrics | Quantitative comparison with baseline CAM methods on Oxford-IIIT Pet and MS-COCO datasets |
 | Comparison Figures | Visual comparison of CAM outputs (interactive gallery) |
+| Performance Metrics | Quantitative comparison with baseline CAM methods on Oxford-IIIT Pet and MS-COCO datasets |
 
 ## Quick Summary
 
