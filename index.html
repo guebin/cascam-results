@@ -2801,7 +2801,11 @@
         <!-- Tab 4: Comparison Figures -->
         <div id="figures" class="tab-content active">
             <h2>Comparison Figures</h2>
-            <p>Visual comparison of CasCAM against baseline methods using best configurations.</p>
+            <p>Visual comparison of CasCAM against baseline methods. Each figure shows the original image with artifact text label ("Cat" or "Dog"), followed by CAM visualizations from 10 different methods.</p>
+
+            <div class="config-note">
+                <strong>CasCAM Configuration:</strong> num_iter=10, θ=0.3, top_k=10, λ=0.1 (Oxford-IIIT Pet) / num_iter=15, θ=0.1, top_k=10, λ=0.0 (MS-COCO)
+            </div>
 
             <!-- Dataset Selection -->
             <div class="figure-controls">
