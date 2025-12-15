@@ -11,8 +11,6 @@ Supplementary materials for **CasCAM: Cascaded Class Activation Mapping**.
 | Tab | Description |
 |-----|-------------|
 | Performance Metrics | Quantitative comparison with baseline CAM methods on Oxford-IIIT Pet and MS-COCO datasets |
-| Parameter Effects | Ablation study on hyperparameters (num_iter, theta, top_k, lambda) |
-| Computational Cost | Timing analysis and computational overhead |
 | Comparison Figures | Visual comparison of CAM outputs (interactive gallery) |
 
 ## Quick Summary
